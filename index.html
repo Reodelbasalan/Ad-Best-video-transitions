@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Best Video Transitions</title>
+<meta name="description" content="Free video transitions editor sa browser. Walang watermark, walang install.">
+<style>
+:root{
+  --bg:#0f1115;--panel:#181b22;--panel2:#20242d;--line:#2c313c;--text:#eef1f6;--muted:#9aa3b2;
+  --accent:#ff3d71;--accent2:#ffb03d;--ok:#3ddc97;--radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 8px;text-align:center}
+header h1{margin:0;font-size:clamp(24px,5vw,38px);letter-spacing:-.5px}
+header h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{margin:6px 0 0;color:var(--muted)}
+main{max-width:1200px;margin:0 auto;padding:16px;display:grid;gap:16px;grid-template-columns:minmax(0,380px) minmax(0,1fr)}
+@media (max-width:900px){main{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.panel h2{margin:0 0 12px;font-size:15px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.drop{display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px;border:2px dashed var(--line);border-radius:12px;cursor:pointer;text-align:center;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:#ff3d7110}
+.drop strong{font-size:17px}
+.drop span{color:var(--muted);font-size:13px}
+#list{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:0}
+.clip{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px}
+.clip .thumb{width:64px;height:40px;border-radius:6px;object-fit:cover;background:#000}
+.clip .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;font-size:14px}
+.clip .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;color:var(--muted);font-size:12px}
+.clip .meta input{width:52px;padding:3px 5px}
+.clip .btns{display:flex;gap:2px}
+.icon{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:6px}
+.icon:hover{background:var(--line);color:var(--text)}
+.gap{display:flex;align-items:center;gap:8px;padding:6px 0 6px 28px;color:var(--muted);font-size:12px}
+.gap::before{content:"";width:2px;height:22px;background:linear-gradient(var(--accent),var(--accent2));border-radius:2px}
+.gap select{flex:1}
+select,input,button{font:inherit;color:var(--text)}
+select,input[type=number]{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.row{display:grid;grid-template-columns:130px minmax(0,1fr);gap:10px;align-items:center;margin-bottom:10px}
+.row label{color:var(--muted);font-size:13px}
+.row output{color:var(--text);font-variant-numeric:tabular-nums;margin-left:6px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;background:var(--panel2);border:1px solid var(--line)}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));border:0;color:#111}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.stage{position:relative;background:#000;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;min-height:240px}
+canvas{display:block;max-width:100%;max-height:70vh;width:auto;height:auto}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;padding:16px;pointer-events:none}
+.bar{height:6px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+#status{margin-top:8px;color:var(--muted);font-size:13px;min-height:20px}
+#download{display:none;margin-top:12px}
+#download a{display:inline-block;text-decoration:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text)}
+.chip:hover{border-color:var(--accent)}
+.hint{color:var(--muted);font-size:12px;margin-top:10px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 16px}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎬 <span>Best Video Transitions</span></h1>
+  <p>Libre. Walang watermark. Walang upload — sa browser mo lang lahat ginagawa.</p>
+</header>
+
+<main>
+  <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <section class="panel">
+      <h2>1 · Clips</h2>
+      <label class="drop" id="drop">
+        <input type="file" id="files" accept="video/*,image/*" multiple hidden>
+        <strong>＋ Add videos / photos</strong>
+        <span>I-click o i-drag dito. Pwede marami.</span>
+      </label>
+      <ul id="list"></ul>
+    </section>
+
+    <section class="panel">
+      <h2>2 · Transition</h2>
+      <div class="row"><label for="allTrans">Lahat ng clips</label>
+        <select id="allTrans"></select></div>
+      <div class="chips" id="chips"></div>
+      <div class="row" style="margin-top:12px"><label for="dur">Haba</label>
+        <div><input type="range" id="dur" min="0.2" max="2" step="0.05" value="0.6"><output id="durOut">0.6s</output></div></div>
+    </section>
+
+    <section class="panel">
+      <h2>3 · Output</h2>
+      <div class="row"><label for="size">Size</label>
+        <select id="size">
+          <option value="1920x1080">16:9 · YouTube (1920×1080)</option>
+          <option value="1080x1920">9:16 · TikTok / Reels (1080×1920)</option>
+          <option value="1080x1080">1:1 · Instagram (1080×1080)</option>
+          <option value="1080x1350">4:5 · IG Portrait (1080×1350)</option>
+          <option value="1280x720">16:9 · 720p (mas mabilis)</option>
+        </select></div>
+      <div class="row"><label for="fit">Fit</label>
+        <select id="fit">
+          <option value="blur">Blur background</option>
+          <option value="cover">Fill (crop)</option>
+          <option value="contain">Fit (black bars)</option>
+        </select></div>
+      <div class="row"><label for="fps">FPS</label>
+        <select id="fps"><option>30</option><option>60</option><option>24</option></select></div>
+      <div class="row"><label for="imgDur">Photo duration</label>
+        <div><input type="range" id="imgDur" min="1" max="10" step="0.5" value="3"><output id="imgDurOut">3s</output></div></div>
+      <div class="row"><label for="sfx">Sound effect</label>
+        <select id="sfx">
+          <option value="whoosh">💨 Whoosh bawat transition</option>
+          <option value="impact">💥 Whoosh + bass hit</option>
+          <option value="off">🔇 Wala</option>
+        </select></div>
+      <div class="row"><label for="music">Background music</label>
+        <input type="file" id="music" accept="audio/*"></div>
+      <div class="row"><label for="musicVol">Music volume</label>
+        <div><input type="range" id="musicVol" min="0" max="1" step="0.05" value="0.6"><output id="musicVolOut">60%</output></div></div>
+      <div class="row"><label for="clipVol">Clip volume</label>
+        <div><input type="range" id="clipVol" min="0" max="1" step="0.05" value="1"><output id="clipVolOut">100%</output></div></div>
+    </section>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <div class="stage">
+      <canvas id="cv" width="1920" height="1080"></canvas>
+      <div class="empty" id="empty">Mag-add ng at least 2 clips para magsimula 👈</div>
+    </div>
+    <section class="panel">
+      <div class="actions">
+        <button class="btn" id="previewBtn" disabled>▶ Preview</button>
+        <button class="btn primary" id="exportBtn" disabled>⬇ Export video</button>
+        <button class="btn" id="stopBtn" disabled>■ Stop</button>
+      </div>
+      <div class="bar"><i id="prog"></i></div>
+      <div id="status"></div>
+      <div id="download"><a class="btn primary" id="dlLink">💾 Download video</a></div>
+      <p class="hint">Tip: Huwag i-minimize o ilipat ang tab habang nag-e-export — real-time ang recording. MP4 ang output sa Chrome/Edge (bago), WebM sa iba (gumagana pa rin sa YouTube, TikTok, at Facebook).</p>
+    </section>
+  </div>
+</main>
+
+<footer>Open source · MIT License · Gawa gamit ang Canvas + MediaRecorder. May FFmpeg scripts din sa <code>scripts/</code> para sa high-quality export.</footer>
+
+<script>
+"use strict";
+/* ============ helpers ============ */
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const easeInOut = p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;
+const easeOutExpo = p => p >= 1 ? 1 : 1 - Math.pow(2, -10*p);
+const easeInExpo = p => p <= 0 ? 0 : Math.pow(2, 10*p - 10);
+const bell = p => Math.sin(p * Math.PI);           // 0 → 1 → 0
+const fmt = s => (Math.round(s * 10) / 10) + "s";
+
+function makeCanvas(w, h){ const c = document.createElement("canvas"); c.width = w; c.height = h; return c; }
+
+/* seeded random so glitch looks stable per frame */
+function rng(seed){ return () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }; }
+
+/* ============ transitions ============
+   Each fn(ctx, A, B, p, W, H) draws a frame where A = outgoing layer, B = incoming layer, p = 0..1 */
+function drawAt(ctx, img, x, y, sx = 1, sy = sx, rot = 0){
+  const W = ctx.canvas.width, H = ctx.canvas.height;
+  ctx.save();
+  ctx.translate(W/2 + x, H/2 + y); ctx.rotate(rot); ctx.scale(sx, sy);
+  ctx.drawImage(img, -W/2, -H/2, W, H);
+  ctx.restore();
+}
+function overlay(ctx, color, a){ ctx.save(); ctx.globalAlpha = clamp(a,0,1); ctx.fillStyle = color; ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height); ctx.restore(); }
+function slide(dx, dy, ease = easeInOut){
+  return (ctx, A, B, p, W, H) => { const e = ease(p); drawAt(ctx, A, -dx*e*W, -dy*e*H); drawAt(ctx, B, dx*(1-e)*W, dy*(1-e)*H); };
+}
+function wipe(dir){
+  return (ctx, A, B, p, W, H) => {
+    const e = easeInOut(p);
+    ctx.drawImage(A, 0, 0);
+    ctx.save(); ctx.beginPath();
+    if (dir === "left")  ctx.rect(W*(1-e), 0, W*e, H);
+    if (dir === "right") ctx.rect(0, 0, W*e, H);
+    if (dir === "up")    ctx.rect(0, H*(1-e), W, H*e);
+    if (dir === "down")  ctx.rect(0, 0, W, H*e);
+    ctx.clip(); ctx.drawImage(B, 0, 0); ctx.restore();
+  };
+}
+const pix = makeCanvas(1, 1);
+
+const TRANSITIONS = {
+  fade:      { label: "✨ Fade (crossfade)", fn: (ctx, A, B, p) => { ctx.drawImage(A,0,0); ctx.globalAlpha = easeInOut(p); ctx.drawImage(B,0,0); ctx.globalAlpha = 1; } },
+  flash:     { label: "⚡ Flash (white)", fn: (ctx, A, B, p) => { ctx.drawImage(p < .5 ? A : B, 0, 0); overlay(ctx, "#fff", bell(p) * 1.4); } },
+  dip:       { label: "🌑 Dip to black", fn: (ctx, A, B, p) => { ctx.drawImage(p < .5 ? A : B, 0, 0); overlay(ctx, "#000", bell(p) * 1.15); } },
+  whip:      { label: "💨 Whip pan", fn: (ctx, A, B, p, W, H) => {
+    const e = easeInOut(p); ctx.save(); ctx.filter = `blur(${Math.round(bell(p) * 28)}px)`;
+    drawAt(ctx, A, -e*W, 0); drawAt(ctx, B, (1-e)*W, 0); ctx.restore(); } },
+  zoomin:    { label: "🔍 Zoom in", fn: (ctx, A, B, p) => {
+    ctx.save(); ctx.filter = `blur(${Math.round(bell(p) * 18)}px)`;
+    if (p < .5) { const e = easeInExpo(p*2); drawAt(ctx, A, 0, 0, 1 + e*2); }
+    else        { const e = 1 - easeOutExpo((p-.5)*2); drawAt(ctx, B, 0, 0, 1 + e*0.6); }
+    ctx.restore(); overlay(ctx, "#fff", bell(p) * .25); } },
+  zoomout:   { label: "🔭 Zoom out", fn: (ctx, A, B, p) => {
+    ctx.save(); ctx.filter = `blur(${Math.round(bell(p) * 18)}px)`;
+    if (p < .5) { const e = easeInExpo(p*2); drawAt(ctx, A, 0, 0, 1 - e*.5); }
+    else        { const e = 1 - easeOutExpo((p-.5)*2); drawAt(ctx, B, 0, 0, 1 + e*1.5); }
+    ctx.restore(); } },
+  spin:      { label: "🌀 Spin", fn: (ctx, A, B, p) => {
+    ctx.save(); ctx.filter = `blur(${Math.round(bell(p) * 14)}px)`;
+    const e = easeInOut(p);
+    if (p < .5) drawAt(ctx, A, 0, 0, 1 + e*1.2, 1 + e*1.2, e * Math.PI);
+    else        drawAt(ctx, B, 0, 0, 1 + (1-e)*1.2, 1 + (1-e)*1.2, -(1-e) * Math.PI);
+    ctx.restore(); } },
+  glitch:    { label: "📺 Glitch", fn: (ctx, A, B, p, W, H) => {
+    const src = p < .5 ? A : B, other = p < .5 ? B : A, k = bell(p);
+    ctx.drawImage(src, 0, 0);
+    const r = rng(Math.floor(p * 40) + 7), n = 4 + Math.floor(k * 14);
+    for (let i = 0; i < n; i++) {
+      const y = r() * H, h = 4 + r() * H * .08, dx = (r() - .5) * W * .25 * k;
+      ctx.drawImage(r() < .3 ? other : src, 0, y, W, h, dx, y, W, h);
+    }
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = .55 * k;
+    ctx.filter = "hue-rotate(90deg) saturate(3)"; ctx.drawImage(src, 18 * k, 0);
+    ctx.filter = "hue-rotate(-90deg) saturate(3)"; ctx.drawImage(src, -18 * k, 0);
+    ctx.restore(); } },
+  pixelize:  { label: "👾 Pixelize", fn: (ctx, A, B, p, W, H) => {
+    const block = 1 + bell(p) * 60, w = Math.max(1, Math.round(W / block)), h = Math.max(1, Math.round(H / block));
+    pix.width = w; pix.height = h; const pc = pix.getContext("2d");
+    pc.drawImage(p < .5 ? A : B, 0, 0, w, h);
+    ctx.save(); ctx.imageSmoothingEnabled = false; ctx.drawImage(pix, 0, 0, W, H); ctx.restore(); } },
+  blur:      { label: "🌫 Blur dissolve", fn: (ctx, A, B, p) => {
+    ctx.save(); ctx.filter = `blur(${Math.round(bell(p) * 30)}px)`; ctx.drawImage(A,0,0);
+    ctx.globalAlpha = easeInOut(p); ctx.drawImage(B,0,0); ctx.restore(); } },
+  circle:    { label: "⭕ Circle open (iris)", fn: (ctx, A, B, p, W, H) => {
+    ctx.drawImage(A,0,0); ctx.save(); ctx.beginPath();
+    ctx.arc(W/2, H/2, easeInOut(p) * Math.hypot(W, H) / 2, 0, Math.PI*2); ctx.clip(); ctx.drawImage(B,0,0); ctx.restore(); } },
+  circleclose: { label: "⚫ Circle close", fn: (ctx, A, B, p, W, H) => {
+    ctx.drawImage(B,0,0); ctx.save(); ctx.beginPath();
+    ctx.arc(W/2, H/2, (1 - easeInOut(p)) * Math.hypot(W, H) / 2, 0, Math.PI*2); ctx.clip(); ctx.drawImage(A,0,0); ctx.restore(); } },
+  slideleft:  { label: "⬅ Slide left",  fn: slide(1, 0) },
+  slideright: { label: "➡ Slide right", fn: slide(-1, 0) },
+  slideup:    { label: "⬆ Slide up",    fn: slide(0, 1) },
+  slidedown:  { label: "⬇ Slide down",  fn: slide(0, -1) },
+  wipeleft:   { label: "◀ Wipe left",   fn: wipe("left") },
+  wiperight:  { label: "▶ Wipe right",  fn: wipe("right") },
+  wipeup:     { label: "🔼 Wipe up",    fn: wipe("up") },
+  wipedown:   { label: "🔽 Wipe down",  fn: wipe("down") },
+  diagonal:   { label: "◢ Diagonal wipe", fn: (ctx, A, B, p, W, H) => {
+    const e = easeInOut(p) * (W + H); ctx.drawImage(A,0,0); ctx.save(); ctx.beginPath();
+    ctx.moveTo(0,0); ctx.lineTo(e,0); ctx.lineTo(0,e); ctx.closePath(); ctx.clip(); ctx.drawImage(B,0,0); ctx.restore(); } },
+  blinds:     { label: "🪟 Blinds", fn: (ctx, A, B, p, W, H) => {
+    const n = 10, e = easeInOut(p), sw = W / n; ctx.drawImage(A,0,0); ctx.save(); ctx.beginPath();
+    for (let i = 0; i < n; i++) ctx.rect(i*sw, 0, sw*e, H); ctx.clip(); ctx.drawImage(B,0,0); ctx.restore(); } },
+  squeeze:    { label: "↔ Squeeze", fn: (ctx, A, B, p) => {
+    const e = easeInOut(p); ctx.fillStyle = "#000"; ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    if (p < .5) drawAt(ctx, A, 0, 0, Math.max(.001, 1 - e*2), 1); else drawAt(ctx, B, 0, 0, Math.max(.001, (e-.5)*2), 1); } },
+  flip:       { label: "🃏 Card flip", fn: (ctx, A, B, p) => {
+    const e = easeInOut(p), s = Math.abs(Math.cos(e * Math.PI)); ctx.fillStyle = "#000"; ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    drawAt(ctx, e < .5 ? A : B, 0, 0, Math.max(.001, s) * (1 - bell(p)*.15), 1 - bell(p)*.15); } },
+  bounce:     { label: "🏀 Bounce in", fn: (ctx, A, B, p, W, H) => {
+    const t = p, b = 1 - Math.abs(Math.cos(t * Math.PI * 2.5)) * Math.pow(1 - t, 2);
+    ctx.drawImage(A,0,0); drawAt(ctx, B, 0, -(1 - b) * H); } },
+  shake:      { label: "📳 Shake", fn: (ctx, A, B, p, W, H) => {
+    const k = bell(p), r = rng(Math.floor(p * 60) + 3);
+    const dx = (r() - .5) * W * .08 * k, dy = (r() - .5) * H * .08 * k, rot = (r() - .5) * .08 * k;
+    ctx.save(); ctx.filter = `blur(${Math.round(k * 6)}px)`;
+    drawAt(ctx, A, dx, dy, 1 + k * .15, 1 + k * .15, rot); ctx.globalAlpha = easeInOut(p); drawAt(ctx, B, dx, dy, 1 + k * .15, 1 + k * .15, rot);
+    ctx.restore(); } },
+  lightleak:  { label: "🌅 Light leak", fn: (ctx, A, B, p, W, H) => {
+    ctx.drawImage(A,0,0); ctx.globalAlpha = easeInOut(p); ctx.drawImage(B,0,0); ctx.globalAlpha = 1;
+    const k = bell(p), x = W * (-.2 + p * 1.4), g = ctx.createRadialGradient(x, H*.4, 0, x, H*.4, Math.max(W, H) * .9);
+    g.addColorStop(0, `rgba(255,220,150,${.95*k})`); g.addColorStop(.35, `rgba(255,120,40,${.7*k})`); g.addColorStop(1, "rgba(255,40,80,0)");
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = g; ctx.fillRect(0,0,W,H); ctx.restore(); } },
+  crosszoom:  { label: "🎯 Cross zoom", fn: (ctx, A, B, p) => {
+    const e = easeInOut(p); ctx.save(); ctx.filter = `blur(${Math.round(bell(p) * 22)}px)`;
+    drawAt(ctx, A, 0, 0, 1 + e * 1.5); ctx.globalAlpha = e; drawAt(ctx, B, 0, 0, 1 + (1 - e) * .8); ctx.restore(); } },
+  cut:        { label: "✂ Cut (walang transition)", fn: (ctx, A, B, p) => ctx.drawImage(p < .5 ? A : B, 0, 0) },
+};
+const KEYS = Object.keys(TRANSITIONS);
+const RANDOM = "random";
+const TOP = ["flash", "whip", "zoomin", "glitch", "shake", "lightleak", "spin", "fade"];
+
+/* ============ state ============ */
+const clips = [];   // {id, kind:'video'|'image', el, thumbUrl, name, dur, trimStart, trimEnd, trans}
+let music = null;   // {el, url}
+let uid = 0;
+let running = null; // current run controller
+
+const cv = $("#cv"), ctx = cv.getContext("2d");
+const layerA = makeCanvas(1920, 1080), layerB = makeCanvas(1920, 1080);
+
+/* ============ UI setup ============ */
+function fillSelect(sel, withRandom = true){
+  sel.innerHTML = "";
+  if (withRandom) sel.add(new Option("🎲 Random (iba-iba bawat cut)", RANDOM));
+  KEYS.forEach(k => sel.add(new Option(TRANSITIONS[k].label, k)));
+}
+fillSelect($("#allTrans"));
+$("#allTrans").value = "flash";
+$("#allTrans").addEventListener("change", e => { clips.forEach(c => c.trans = e.target.value); renderList(); });
+TOP.forEach(k => {
+  const b = document.createElement("button"); b.className = "chip"; b.textContent = TRANSITIONS[k].label;
+  b.onclick = () => { $("#allTrans").value = k; $("#allTrans").dispatchEvent(new Event("change")); };
+  $("#chips").append(b);
+});
+function bindRange(id, outId, f){ const i = $(id), o = $(outId); const u = () => o.textContent = f(+i.value); i.addEventListener("input", u); u(); }
+bindRange("#dur", "#durOut", fmt);
+bindRange("#imgDur", "#imgDurOut", v => { clips.filter(c => c.kind === "image" && !c.customDur).forEach(c => c.dur = c.trimEnd = v); renderList(); return fmt(v); });
+bindRange("#musicVol", "#musicVolOut", v => Math.round(v*100) + "%");
+bindRange("#clipVol", "#clipVolOut", v => Math.round(v*100) + "%");
+["#size", "#fit"].forEach(s => $(s).addEventListener("change", () => { resize(); drawIdle(); }));
+
+const drop = $("#drop");
+$("#files").addEventListener("change", e => { addFiles(e.target.files); e.target.value = ""; });
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => addFiles(e.dataTransfer.files));
+
+$("#music").addEventListener("change", e => {
+  if (music) URL.revokeObjectURL(music.url);
+  const f = e.target.files[0]; if (!f) { music = null; return; }
+  const url = URL.createObjectURL(f), el = new Audio(url); el.preload = "auto";
+  music = { el, url };
+});
+
+/* ============ adding clips ============ */
+async function addFiles(fileList){
+  const files = [...fileList].filter(f => /^(video|image)\//.test(f.type));
+  for (const f of files) {
+    const url = URL.createObjectURL(f);
+    try {
+      const clip = f.type.startsWith("image/") ? await loadImage(url, f) : await loadVideo(url, f);
+      clips.push(clip);
+    } catch (err) {
+      status(`❌ Hindi ma-open ang "${f.name}" — baka hindi supported ng browser ang format (subukan ang MP4/H.264).`);
+    }
+  }
+  renderList(); resize(); drawIdle();
+}
+function loadImage(url, f){
+  return new Promise((res, rej) => {
+    const el = new Image(); el.onload = () => {
+      const d = +$("#imgDur").value;
+      res({ id: ++uid, kind: "image", el, thumbUrl: url, name: f.name, dur: d, src: d, trimStart: 0, trimEnd: d, trans: $("#allTrans").value });
+    }; el.onerror = rej; el.src = url;
+  });
+}
+function loadVideo(url, f){
+  return new Promise((res, rej) => {
+    const el = document.createElement("video");
+    el.preload = "auto"; el.playsInline = true; el.crossOrigin = "anonymous"; el.src = url;
+    el.onloadeddata = async () => {
+      let d = el.duration;
+      if (!isFinite(d)) {            // some WebM files report Infinity until you seek to the end
+        await new Promise(r => { el.addEventListener("durationchange", r, { once: true }); el.currentTime = 1e9; setTimeout(r, 3000); });
+        d = el.duration; el.currentTime = 0;
+      }
+      if (!isFinite(d) || d <= 0) return rej(new Error("no duration"));
+      res({ id: ++uid, kind: "video", el, thumbUrl: url, name: f.name, dur: d, src: d, trimStart: 0, trimEnd: d, trans: $("#allTrans").value });
+    };
+    el.onerror = rej;
+  });
+}
+
+/* ============ list rendering ============ */
+function renderList(keepStatus = false){
+  const ul = $("#list"); ul.innerHTML = "";
+  clips.forEach((c, i) => {
+    const li = document.createElement("li"); li.className = "clip";
+    const thumb = c.kind === "image" ? `<img class="thumb" src="${c.thumbUrl}" alt="">`
+                                     : `<video class="thumb" src="${c.thumbUrl}#t=0.5" muted preload="metadata"></video>`;
+    const timeFields = c.kind === "video"
+      ? `from <input type="number" step="0.1" min="0" data-k="trimStart" value="${c.trimStart.toFixed(1)}"> to <input type="number" step="0.1" min="0" data-k="trimEnd" value="${c.trimEnd.toFixed(1)}"> s`
+      : `<input type="number" step="0.5" min="0.5" data-k="imgDur" value="${c.dur}"> s`;
+    li.innerHTML = `${thumb}
+      <div style="min-width:0"><div class="name" title="${escapeHtml(c.name)}">${i+1}. ${escapeHtml(c.name)}</div>
+      <div class="meta">${c.kind === "video" ? "🎞" : "🖼"} ${timeFields}</div></div>
+      <div class="btns">
+        <button class="icon" data-a="up" title="Move up" ${i===0?"disabled":""}>↑</button>
+        <button class="icon" data-a="down" title="Move down" ${i===clips.length-1?"disabled":""}>↓</button>
+        <button class="icon" data-a="del" title="Remove">✕</button>
+      </div>`;
+    li.querySelectorAll("input").forEach(inp => inp.addEventListener("change", () => {
+      const v = +inp.value;
+      if (inp.dataset.k === "imgDur") { c.dur = c.trimEnd = Math.max(.5, v); c.customDur = true; }
+      else {
+        if (inp.dataset.k === "trimStart") c.trimStart = clamp(v, 0, c.trimEnd - .3);
+        else c.trimEnd = clamp(v, c.trimStart + .3, c.src);
+        c.dur = c.trimEnd - c.trimStart;
+      }
+      renderList();
+    }));
+    li.querySelector("[data-a=up]").onclick = () => { [clips[i-1], clips[i]] = [clips[i], clips[i-1]]; renderList(); drawIdle(); };
+    li.querySelector("[data-a=down]").onclick = () => { [clips[i+1], clips[i]] = [clips[i], clips[i+1]]; renderList(); drawIdle(); };
+    li.querySelector("[data-a=del]").onclick = () => { URL.revokeObjectURL(c.thumbUrl); clips.splice(i, 1); renderList(); drawIdle(); };
+    ul.append(li);
+    if (i < clips.length - 1) {
+      const gap = document.createElement("li"); gap.className = "gap";
+      const sel = document.createElement("select"); fillSelect(sel); sel.value = c.trans;
+      sel.onchange = () => c.trans = sel.value;
+      gap.append(sel); ul.append(gap);
+    }
+  });
+  const ok = clips.length >= 2 && !running;
+  $("#previewBtn").disabled = $("#exportBtn").disabled = !ok;
+  $("#empty").style.display = clips.length ? "none" : "flex";
+  const total = timeline().total;
+  if (clips.length >= 2 && !running && !keepStatus) status(`${clips.length} clips · total ${fmt(total)}`);
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch])); }
+function status(t){ $("#status").textContent = t; }
+
+/* ============ rendering ============ */
+function resize(){
+  const [w, h] = $("#size").value.split("x").map(Number);
+  for (const c of [cv, layerA, layerB]) { c.width = w; c.height = h; }
+}
+function drawSource(target, clip, localT){
+  const g = target.getContext("2d"), W = target.width, H = target.height, el = clip.el;
+  const sw = clip.kind === "video" ? el.videoWidth : el.naturalWidth;
+  const sh = clip.kind === "video" ? el.videoHeight : el.naturalHeight;
+  g.fillStyle = "#000"; g.fillRect(0, 0, W, H);
+  if (!sw || !sh) return;
+  // subtle Ken Burns zoom for photos
+  const kb = clip.kind === "image" ? 1 + 0.08 * clamp(localT / clip.dur, 0, 1) : 1;
+  const fit = $("#fit").value;
+  const cover = Math.max(W / sw, H / sh), contain = Math.min(W / sw, H / sh);
+  const put = (s) => { const w = sw * s * kb, h = sh * s * kb; g.drawImage(el, (W - w) / 2, (H - h) / 2, w, h); };
+  if (fit === "cover") return put(cover);
+  if (fit === "blur" && Math.abs(cover - contain) > 1e-3) {
+    g.save(); g.filter = "blur(40px) brightness(.7)"; put(cover * 1.1); g.restore();
+  }
+  put(contain);
+}
+function drawIdle(){
+  resize();
+  if (!clips.length) { ctx.fillStyle = "#000"; ctx.fillRect(0, 0, cv.width, cv.height); return; }
+  const c = clips[0];
+  if (c.kind === "video") { c.el.currentTime = c.trimStart; c.el.addEventListener("seeked", () => { drawSource(cv, c, 0); }, { once: true }); }
+  drawSource(cv, c, 0);
+}
+
+/* ============ timeline ============ */
+function timeline(){
+  const T = +$("#dur").value;
+  const starts = []; let t = 0;
+  const gaps = clips.map((c, i) => {
+    if (i === clips.length - 1) return null;
+    const max = Math.min(c.dur, clips[i+1].dur) * 0.45;   // keep transitions shorter than clips
+    const pool = KEYS.filter(k => k !== "cut");
+    let key = c.trans === RANDOM ? pool[Math.floor(Math.random() * pool.length)] : c.trans;
+    return { key, T: key === "cut" ? 0.001 : Math.min(T, max) };
+  });
+  clips.forEach((c, i) => { starts.push(t); t += c.dur - (gaps[i] ? gaps[i].T : 0); });
+  return { starts, gaps, total: t };
+}
+
+/* ============ audio graph ============ */
+let actx = null, mixDest = null, master = null;
+const srcNodes = new Map(); // element -> GainNode (createMediaElementSource only once per element)
+function audioFor(el){
+  if (!actx) {
+    actx = new AudioContext(); mixDest = actx.createMediaStreamDestination();
+    // master limiter so clips + music + whoosh never clip/distort
+    master = actx.createDynamicsCompressor();
+    master.threshold.value = -6; master.knee.value = 4; master.ratio.value = 12; master.attack.value = .003; master.release.value = .15;
+    master.connect(actx.destination); master.connect(mixDest);
+  }
+  if (!srcNodes.has(el)) {
+    const g = actx.createGain(); g.gain.value = 0;
+    actx.createMediaElementSource(el).connect(g);
+    g.connect(master);
+    srcNodes.set(el, g);
+  }
+  return srcNodes.get(el);
+}
+
+/* ============ sound effects (synthesized, no files needed) ============ */
+let noiseBuf = null;
+function playSfx(T, impact){
+  const t0 = actx.currentTime, len = clamp(T, .25, 1.2);
+  if (!noiseBuf) {
+    noiseBuf = actx.createBuffer(1, actx.sampleRate * 2, actx.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  const out = actx.createGain(); out.gain.value = .9; out.connect(master);
+  const src = actx.createBufferSource(); src.buffer = noiseBuf;
+  const bp = actx.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = 1.4;
+  bp.frequency.setValueAtTime(250, t0); bp.frequency.exponentialRampToValueAtTime(3500, t0 + len * .55); bp.frequency.exponentialRampToValueAtTime(400, t0 + len);
+  const g = actx.createGain(); g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.6, t0 + len * .55); g.gain.exponentialRampToValueAtTime(.0001, t0 + len);
+  src.connect(bp).connect(g).connect(out); src.start(t0); src.stop(t0 + len + .05);
+  if (impact) {
+    const hit = t0 + len * .5, o = actx.createOscillator(), og = actx.createGain();
+    o.frequency.setValueAtTime(140, hit); o.frequency.exponentialRampToValueAtTime(38, hit + .4);
+    og.gain.setValueAtTime(.0001, t0); og.gain.setValueAtTime(.0001, hit); og.gain.exponentialRampToValueAtTime(.9, hit + .01); og.gain.exponentialRampToValueAtTime(.0001, hit + .5);
+    o.connect(og).connect(out); o.start(t0); o.stop(hit + .55);
+  }
+}
+
+/* ============ playback / export ============ */
+function pickMime(){
+  const types = ["video/mp4;codecs=avc1.640028,mp4a.40.2", "video/mp4;codecs=avc1,mp4a", 
+                 "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm", "video/mp4"];
+  return types.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || "";
+}
+function seekTo(el, t){
+  return new Promise(res => {
+    if (Math.abs(el.currentTime - t) < 0.01 && el.readyState >= 2) return res();
+    el.addEventListener("seeked", () => res(), { once: true }); el.currentTime = t;
+  });
+}
+
+async function run(record){
+  if (clips.length < 2 || running) return;
+  resize();
+  const ctl = { stop: false }; running = ctl;
+  setBusy(true);
+  $("#download").style.display = "none";
+  const { starts, gaps, total } = timeline();
+  const fps = +$("#fps").value, clipVol = +$("#clipVol").value;
+
+  // prepare
+  status("Inihahanda ang clips…");
+  const gains = clips.map(c => c.kind === "video" ? audioFor(c.el) : null);
+  if (actx.state !== "running") await actx.resume();
+  await Promise.all(clips.map(c => c.kind === "video" ? (c.el.pause(), seekTo(c.el, c.trimStart)) : null));
+  let musicGain = null;
+  if (music) { musicGain = audioFor(music.el); music.el.pause(); await seekTo(music.el, 0); music.el.loop = true; }
+
+  // recorder
+  let rec = null, chunks = [], mime = "";
+  if (record) {
+    mime = pickMime();
+    if (!mime) { status("❌ Hindi supported ng browser na ito ang video recording. Gamitin ang Chrome o Edge."); return finish(); }
+    const stream = cv.captureStream(fps);
+    mixDest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+    const [w, h] = [cv.width, cv.height];
+    rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: Math.round(w * h * fps * 0.2), audioBitsPerSecond: 192000 });
+    rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+    rec.start(250);
+  }
+
+  const started = new Set(), sfxDone = new Set(), sfxMode = $("#sfx").value;
+  const t0 = performance.now();
+  if (musicGain) { musicGain.gain.value = +$("#musicVol").value; music.el.play(); }
+
+  await new Promise(resolve => {
+    let lastFrame = -1;
+    const tick = () => {
+      if (ctl.stop) return resolve();
+      const t = (performance.now() - t0) / 1000;
+      if (t >= total) return resolve();
+
+      // start / stop clips by time
+      clips.forEach((c, i) => {
+        const local = t - starts[i];
+        if (c.kind !== "video") return;
+        if (local >= 0 && local < c.dur && !started.has(i)) { started.add(i); c.el.play().catch(() => {}); }
+        if ((local >= c.dur || c.el.currentTime >= c.trimEnd) && !c.el.paused) c.el.pause();
+      });
+
+      // find current clip and transition progress
+      let cur = 0; for (let i = 0; i < clips.length; i++) if (starts[i] <= t) cur = i;
+      let prev = -1, p = 1;
+      if (cur > 0 && t < starts[cur] + gaps[cur-1].T) { prev = cur - 1; p = (t - starts[cur]) / gaps[cur-1].T; }
+
+      // whoosh: starts slightly before each cut so the peak lands mid-transition
+      if (sfxMode !== "off") for (let i = 1; i < clips.length; i++) {
+        const lead = Math.max(0, clamp(gaps[i-1].T, .25, 1.2) * .5 - gaps[i-1].T * .5);
+        if (!sfxDone.has(i) && gaps[i-1].key !== "cut" && t >= starts[i] - lead) { sfxDone.add(i); playSfx(gaps[i-1].T, sfxMode === "impact"); }
+      }
+
+      // audio crossfade
+      gains.forEach((g, i) => { if (!g) return;
+        const v = i === cur ? (prev >= 0 ? p : 1) : i === prev ? 1 - p : 0;
+        g.gain.setTargetAtTime(v * clipVol, actx.currentTime, 0.015); });
+      if (musicGain) {
+        const fadeOut = clamp((total - t) / 1.5, 0, 1), fadeIn = clamp(t / 0.5, 0, 1);
+        musicGain.gain.setTargetAtTime(+$("#musicVol").value * Math.min(fadeIn, fadeOut), actx.currentTime, 0.05);
+      }
+
+      // draw (throttle to fps)
+      const frame = Math.floor(t * fps);
+      if (frame !== lastFrame) {
+        lastFrame = frame;
+        if (prev >= 0) {
+          drawSource(layerA, clips[prev], t - starts[prev]);
+          drawSource(layerB, clips[cur], t - starts[cur]);
+          ctx.save(); ctx.fillStyle = "#000"; ctx.fillRect(0, 0, cv.width, cv.height);
+          TRANSITIONS[gaps[prev].key].fn(ctx, layerA, layerB, clamp(p, 0, 1), cv.width, cv.height);
+          ctx.restore();
+        } else {
+          drawSource(cv, clips[cur], t - starts[cur]);
+        }
+        $("#prog").style.width = (t / total * 100).toFixed(1) + "%";
+        status(`${record ? "⏺ Nag-e-export" : "▶ Preview"} · ${fmt(t)} / ${fmt(total)}`);
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+
+  // cleanup
+  clips.forEach(c => c.kind === "video" && c.el.pause());
+  gains.forEach(g => g && g.gain.setTargetAtTime(0, actx.currentTime, 0.02));
+  if (music) { music.el.pause(); musicGain.gain.value = 0; }
+
+  if (rec) {
+    await new Promise(r => { rec.onstop = r; rec.stop(); });
+    if (!ctl.stop) {
+      const blob = new Blob(chunks, { type: mime.split(";")[0] });
+      const ext = mime.startsWith("video/mp4") ? "mp4" : "webm";
+      const a = $("#dlLink");
+      if (a.href) URL.revokeObjectURL(a.href);
+      a.href = URL.createObjectURL(blob); a.download = `transitions-${Date.now()}.${ext}`;
+      $("#download").style.display = "block";
+      window.__lastExport = { size: blob.size, type: blob.type };
+      status(`✅ Tapos na! ${(blob.size / 1048576).toFixed(1)} MB · ${ext.toUpperCase()}`);
+    } else status("■ Na-stop ang export.");
+  } else status(ctl.stop ? "■ Na-stop." : "✅ Tapos ang preview.");
+  if (!ctl.stop) $("#prog").style.width = "100%";
+  finish();
+
+  function finish(){ running = null; setBusy(false); renderListButtons(); }
+}
+function setBusy(b){
+  $("#stopBtn").disabled = !b; $("#previewBtn").disabled = $("#exportBtn").disabled = b || clips.length < 2;
+  document.querySelectorAll("#list button, #list input, #list select, main section select, main section input").forEach(el => el.disabled = b);
+}
+function renderListButtons(){ renderList(true); }
+
+$("#previewBtn").onclick = () => run(false);
+$("#exportBtn").onclick = () => run(true);
+$("#stopBtn").onclick = () => { if (running) running.stop = true; };
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && running) status("⚠ Bumalik sa tab na ito — humihinto ang render kapag naka-minimize.");
+});
+
+resize(); drawIdle(); renderList();
+</script>
+</body>
+</html>
